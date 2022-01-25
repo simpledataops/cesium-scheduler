@@ -22,8 +22,8 @@
 This repository provides code examples and documentation for Cesium Scheduler, a new age recurring tasks scheduler architected for the cloud.
 
 # What use cases does Cesium Scheduler solve?
-Cesium scheduler is a tool that helps you run recurring workflows which are supposed to run at specific time intervals.
-Examples include 
+Cesium Scheduler is a tool that helps you run recurring workflows which are supposed to run at specific time intervals.
+Examples include running workflows for data extraction, data movement (using FTP or S3 etc), data processing, periodic restacking, security scans etc.
 
 # Core Concepts
 
