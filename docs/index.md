@@ -83,15 +83,16 @@ You can also trigger a workflow to run on demand by using the dropdown in the ac
 
 The workflow definition is the heart of the workflow. This is a Cesium specific way of representing an acyclic graph of tasks that need to be executed.The worflow definition is expressed in JSON.
 Each workflow consists of an attribute called `tasks` which must be an array of Tasks.
-Each task consists of an `id` (String), `name` (String), `type` (an enumeration), `depedentTasks` (an array of strings) and then some attributes that are dependent on the task type.
+Each task consists of a `name` (String), `type` (an enumeration), `depedentTasks` (an array of strings) and then some attributes that are dependent on the task type.
 
 Here is an explanation for each attribute:
-| Name | Type | Meaning |
+
+|      Name       |       Type     |     Meaning       |
 | :-------------: | :------------: |:-------------: |
-| `id` (required) | String | The id of this particular task. It needs to be unique within this workflow, must not have spaces, can only contain letters, numbers, and \_, max size (15 chars) |
 | `name` (required) |String| A descriptive name for this particular task. This will be shown in the UI in the workflow run details |
 | `taskType` (required) |Enumeration| Allowed values are [listed below](#task-types) |
 | `depedentTasks` (required) |Array of strings| An array of strings where each entry refers to the `id` of the task that must be run before this task can be run. An empty or null value represents this has no dependencies on any other task. |
+
 
 [Checkout the examples](#workflow-definition-examples)
 
@@ -145,7 +146,6 @@ If you just need a single bash script to be run here is an example.
 {
     "tasks": [
         {
-            "id": "backup",
             "name": "backup",
             "type": "BashTask",
             "command": {
@@ -166,7 +166,6 @@ If you just need a single bash script to be run here is an example.
 {
     "tasks": [
         {
-            "id": "extract",
             "name": "extract",
             "type": "BashTask",
             "command": {
@@ -176,7 +175,6 @@ If you just need a single bash script to be run here is an example.
             "dependentTasks": []
         },
         {
-            "id": "load",
             "name": "load",
             "type": "BashTask",
             "command": {
