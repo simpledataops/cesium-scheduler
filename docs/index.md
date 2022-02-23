@@ -16,7 +16,11 @@
 - [Workflow Definition Examples](#workflow-definition-examples)
   - [A simple workflow with 1 bash task](#a-simple-workflow-with-1-bash-task)
   - [A simple workflow with 2 bash tasks with a dependency](#a-simple-workflow-with-2-bash-tasks-with-a-dependency)
-- [Download Tex](#download-tex)
+- [Task Executor (Tex)](#task-executor-tex)
+  - [Requirements](#requirements)
+    - [Restrictions](#restrictions)
+  - [Running Tex](#running-tex)
+  - [Downloading Tex](#downloading-tex)
 # Cesium Scheduler
 
 This repository provides code examples and documentation for Cesium Scheduler, a new age recurring tasks scheduler architected for the cloud.
@@ -191,6 +195,47 @@ If you just need a single bash script to be run here is an example.
 }
 ```
 
-# Download Tex
+# Task Executor (Tex)
+The Task Executor is the component of Cesium Scheduler that is deployed inside the customers infrastructure and actually executes the worklfows and manages the processes and outcomes associated with the workflow tasks.
+You must download Tex (link below) and run it on your machine.
+
+## Requirements
+
+Following are the requirements for running Tex:
+* Tex is designed to run on JRE 1.8 (any JVM > 1.8 is good enough)
+* Tex does not need to be run as root.
+* The JVM will consume about 512 MB of RAM
+* The machine where tex runs requires outbound internet action to reach Cesium Scheduler's cloud servers.
+* Tex will not open any inbound ports on your machine and does not require changes to inbound rules on your firewall.
+* Tex requires bash to be available if there are bash tasks that need to be executed
+* Tex requires Python 3 and pip to be available if there are Python tasks to be executed.
+
+### Restrictions
+
+Restrictions: 
+* Tex does not work on Windows environments and will only run on nix systems
+  
+
+
+## Running Tex
+Use the following steps to run tex:
+1. Download the tex zip using the link on the download tex page
+2. Optionally create a user for tex with non-super user status.
+3. Unzip the contents into the location where you want to run tex like `/opt/cesium/tex`.
+4. Once the contents are unzipped into a folder, we will refer to this folder as `TEX_HOME`.
+5. Go to the web console of Cesium Scheduler and navigate to the specific task executor you are trying to run. There will be a button there to download the config file for this tex. Press it and save the file locally.
+6. Under `TEX_HOME` there is a folder called config with a single config file under it called `tex-config.properties`. Update the config values from the values you get from the file you downloaded earlier.
+7. You must now have a filled up config file that will look like this:
+```
+baseURL: app.cesiumscheduler.com
+texId: ahj721hasada
+password: eky1UwXpMd7PzSUW4OT9
+tenantRefId: 9abcd31l-831c-4672-9330-286dd73aec45
+useTLS: true
+heartBeatPeriod: 60
+```
+8. Run the start script: `$TEX_HOME/bin/start-cesium-tex.sh` . This will start tex as a background process and will write out logs under the logs folder. You can safely exit the user and the shell where you started the tex instance.
+
+## Downloading Tex
 
 You can download tex from [this page](download-tex.md).
