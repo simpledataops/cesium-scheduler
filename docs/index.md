@@ -10,12 +10,12 @@
     - [Workflow Definition](#workflow-definition)
     - [Task Types](#task-types)
       - [BashTask](#bashtask)
-      - [PyTask](#pytask)
+      - [PythonTask](#pythontask)
     - [Workflow Run](#workflow-run)
     - [Lifecyle of a workflow run](#lifecyle-of-a-workflow-run)
 - [Workflow Definition Examples](#workflow-definition-examples)
   - [A simple workflow with 1 bash task](#a-simple-workflow-with-1-bash-task)
-  - [A simple workflow with 2 bash tasks with a dependency](#a-simple-workflow-with-2-bash-tasks-with-a-dependency)
+  - [A simple workflow with 2 tasks with a dependency](#a-simple-workflow-with-2-tasks-with-a-dependency)
 - [Task Executor (Tex)](#task-executor-tex)
   - [Requirements](#requirements)
     - [Restrictions](#restrictions)
@@ -107,14 +107,50 @@ The current supported task types are:
 #### BashTask
 
 This is used to run bash scripts.
-It supports params: `command`: a complex json object with 2 attributes `name` (which is the command or the bash script that needs to be run) and `args`: an array of strings that are passed to the bash script as parameters.
+Attributes:
+* `command`: the command that needs to be run like `cat`, `/usr/bin/backup_mysql.sh` (which is the command or the bash script that needs to be run). This can be an absolute path to a file already on the machine where tex runs or a relative path to the python script inside the code artifact zip file.
+* `args`: an array of strings that are passed to the bash script as parameters.
 
-#### PyTask
+Examples:
+```
+{
+            "name": "backup",
+            "type": "BashTask",
+            "command": "/bin/bacup_mysql_db.sh",
+            "args": ["production"],
+            "dependentTasks": []
+    }
+```
 
-This task type is used to run python scripts. Tex currently only supports running python3 scripts. If your task requires specific python libraries, you can define a `requirements.txt` in the code artifact which lists all dependencies in the standard format.
+```
+{
+        "name": "task1",
+        "type": "BashTask",
+        "command": "echo",
+        "args": ["hello world"]
+    }
+```
+
+#### PythonTask
+
+This task type is used to run python scripts. Tex currently only supports running python3 scripts. If your task requires specific python libraries, you can define a `requirements.txt` in the code artifact zip file which lists all dependencies in the standard format.
 Tex will create a virtual env for this workflow which live inside the workflow folder. The virtual env will be activated each time this task needs to be executed.
 
-It supports params: `command`: a complex json object with 2 attributes `name` (which is the command or the bash script that needs to be run) and `args`: an array of strings that are passed to the bash script as parameters.
+The attributes of a python task are: 
+* `script`: The script to the python script that needs to be executed. This can be an absolute path to a file already on the machine where tex runs or a relative path to the python script inside the code artifact zip file.
+* `args`: an array of strings that are passed to the bash script as parameters.
+
+Examples:
+```
+    {
+        "name": "task2",
+        "type": "PythonTask",
+        "dependsOn" : ["task1"],
+        "script": "run.py",
+        "args": ["hello world"]
+    }
+```
+
 
 ### Workflow Run
 
@@ -152,19 +188,16 @@ If you just need a single bash script to be run here is an example.
         {
             "name": "backup",
             "type": "BashTask",
-            "command": {
-                "name": "/bin/bacup_mysql_db.sh",
-                "args": "production"
-            },
+            "command": "/bin/bacup_mysql_db.sh",
+            "args": "production",
             "dependentTasks": []
         }
     ]
 }
 ```
 
-## A simple workflow with 2 bash tasks with a dependency
+## A simple workflow with 2 tasks with a dependency
 
-If you just need a single bash script to be run here is an example.
 
 ```
 {
@@ -172,21 +205,17 @@ If you just need a single bash script to be run here is an example.
         {
             "name": "extract",
             "type": "BashTask",
-            "command": {
-                "name": "extract_database_to_csv.sh",
-                "args": "production"
-            },
+            "command": "extract_database_to_csv.sh",
+            "args": "production",
             "dependentTasks": []
         },
         {
             "name": "load",
-            "type": "BashTask",
-            "command": {
-                "name": "load_to_redshift.sh",
-                "args": [
-                    "--env=prod"
-                ]
-            },
+            "type": "PythonTask",
+            "script": "load_to_redshift.py",
+            "args": [
+                "--env=prod"
+            ],
             "dependentTasks": [
                 "extract"
             ]
