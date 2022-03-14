@@ -257,9 +257,9 @@ Use the following steps to run tex:
 7. You must now have a filled up config file that will look like this:
 ```
 baseURL: app.cesiumscheduler.com
-texId: ahj721hasada
-password: eky1UwXpMd7PzSUW4OT9
-tenantRefId: 9abcd31l-831c-4672-9330-286dd73aec45
+texId: ahj721haasea
+password: ek12313y1UwXpMd7PzSUW4OT9
+tenantRefId: 9abcd31l-1234-5678-9012-286dd73aec45
 useTLS: true
 heartBeatPeriod: 60
 ```
