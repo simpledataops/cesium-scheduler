@@ -21,6 +21,7 @@
     - [Restrictions](#restrictions)
   - [Running Tex](#running-tex)
   - [Downloading Tex](#downloading-tex)
+
 # Cesium Scheduler
 
 This repository provides code examples and documentation for Cesium Scheduler, a new age recurring tasks scheduler architected for the cloud.
@@ -36,9 +37,14 @@ This section explains some of the key things required to work with Cesium Schedu
 ## Deployment Model
 
 Cesium Scheduler is designed to run purely as a SaaS service that is run and managed for you. This allows you to focus on using Cesium to solve key business problems while leaving the operational aspects of running the service and the database to us. The cloud component is sometimes refered to as `Cesium core`, `Cesium Cloud` or `core scheduler` in the documentation.
+
+
+![High Level Deployment Model](images/cesium-high-level-deployment-model.jpeg)
+
 To run tasks and workflows inside your datacenter or cloud infrastructure, we do not require you to open any ports in your network or firewall. Cesium uses messages and queues to communicate commands and statuses across different systems.
 
 The user needs to download a [Task Executor](#task-executor) and run it as a daemon process on any system in your infrastructure. The tasks and workflows will be executed on this machine by the task executor.
+
 
 ## Entities
 
