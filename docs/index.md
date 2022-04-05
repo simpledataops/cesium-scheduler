@@ -151,7 +151,7 @@ Examples:
     {
         "name": "task2",
         "type": "PythonTask",
-        "dependsOn" : ["task1"],
+        "dependentTasks" : ["task1"],
         "script": "run.py",
         "args": ["hello world"]
     }
@@ -262,12 +262,9 @@ Use the following steps to run tex:
 6. Under `TEX_HOME` there is a folder called config with a single config file under it called `tex-config.properties`. Update the config values from the values you get from the file you downloaded earlier.
 7. You must now have a filled up config file that will look like this:
 ```
-baseURL: app.cesiumscheduler.com
-texId: ahj721haasea
-password: ek12313y1UwXpMd7PzSUW4OT9
-tenantRefId: 9abcd31l-1234-5678-9012-286dd73aec45
-useTLS: true
-heartBeatPeriod: 60
+texId: ahasadadaasea
+password: ek12this-is-a-secret-value
+tenantRefId: 9abcd31l-1234-5678-1234-286dd73aec45
 ```
 8. Run the start script: `$TEX_HOME/bin/start-cesium-tex.sh` . This will start tex as a background process and will write out logs under the logs folder. You can safely exit the user and the shell where you started the tex instance.
 
