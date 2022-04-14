@@ -129,7 +129,7 @@ Examples:
 ```
 
 ```
-{
+    {
         "name": "task1",
         "type": "BashTask",
         "command": "echo",
@@ -151,7 +151,7 @@ Examples:
     {
         "name": "task2",
         "type": "PythonTask",
-        "dependsOn" : ["task1"],
+        "dependentTasks" : ["task1"],
         "script": "run.py",
         "args": ["hello world"]
     }
