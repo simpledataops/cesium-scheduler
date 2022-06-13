@@ -99,9 +99,10 @@ Here is an explanation for each attribute:
 
 |      Name       |       Type     |     Meaning       |
 | :-------------: | :------------: |:-------------: |
+| `id` (required) |String| An immutable id for the task which helps track dependencies |
 | `name` (required) |String| A descriptive name for this particular task. This will be shown in the UI in the workflow run details |
 | `taskType` (required) |Enumeration| Allowed values are [listed below](#task-types) |
-| `depedentTasks` (required) |Array of strings| An array of strings where each entry refers to the `id` of the task that must be run before this task can be run. An empty or null value represents this has no dependencies on any other task. |
+| `dependsOn` (required) |Array of strings| An array of strings where each entry refers to the `id` of the task that must be run before this task can be run. An empty or null value represents this has no dependencies on any other task. |
 
 
 [Checkout the examples](#workflow-definition-examples)
@@ -120,16 +121,18 @@ Attributes:
 Examples:
 ```
 {
+            "id": "task1",
             "name": "backup",
             "type": "BashTask",
             "command": "/bin/bacup_mysql_db.sh",
             "args": ["production"],
-            "dependentTasks": []
+            "dependsOn": []
     }
 ```
 
 ```
     {
+        "task1":"12313",
         "name": "task1",
         "type": "BashTask",
         "command": "echo",
@@ -149,9 +152,10 @@ The attributes of a python task are:
 Examples:
 ```
     {
+        "id": "1",
         "name": "task2",
         "type": "PythonTask",
-        "dependentTasks" : ["task1"],
+        "dependsOn" : ["task1"],
         "script": "run.py",
         "args": ["hello world"]
     }
@@ -192,6 +196,7 @@ If you just need a single bash script to be run here is an example.
 {
     "tasks": [
         {
+            "id": "task1",
             "name": "backup",
             "type": "BashTask",
             "command": "/bin/bacup_mysql_db.sh",
@@ -209,21 +214,23 @@ If you just need a single bash script to be run here is an example.
 {
     "tasks": [
         {
+            "id":"extract-task",
             "name": "extract",
             "type": "BashTask",
             "command": "extract_database_to_csv.sh",
             "args": "production",
-            "dependentTasks": []
+            "dependsOn": []
         },
         {
+            "id" : "load-task",
             "name": "load",
             "type": "PythonTask",
             "script": "load_to_redshift.py",
             "args": [
                 "--env=prod"
             ],
-            "dependentTasks": [
-                "extract"
+            "dependsOn": [
+                "extract-task"
             ]
         }
     ]
@@ -248,7 +255,7 @@ Following are the requirements for running Tex:
 ### Restrictions
 
 Restrictions: 
-* Tex does not work on Windows environments and will only run on nix systems
+* Tex does not work on Windows environments and will only run on *nix systems
   
 
 
