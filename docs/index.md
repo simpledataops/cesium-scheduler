@@ -1,11 +1,13 @@
-- [Cesium Scheduler](#cesium-scheduler)
-- [What use cases does Cesium Scheduler solve?](#what-use-cases-does-cesium-scheduler-solve)
+- [Cesium Ops](#cesium-ops)
+- [What use cases does Cesium Ops solve?](#what-use-cases-does-cesium-ops-solve)
 - [Core Concepts](#core-concepts)
   - [Deployment Model](#deployment-model)
   - [Entities](#entities)
-- [Core Entities](#core-entities)
-  - [Workspace](#workspace)
-  - [Task Executor](#task-executor)
+- [Workspace](#workspace)
+- [Task Executor](#task-executor)
+  - [Requirements](#requirements)
+  - [Running Tex](#running-tex)
+  - [Downloading Tex](#downloading-tex)
 - [Workflow](#workflow)
   - [Workflow Trigger Types](#workflow-trigger-types)
     - [Time based](#time-based)
@@ -20,26 +22,28 @@
     - [Run Docker](#run-docker)
 - [Workflow Run](#workflow-run)
   - [Lifecyle of a workflow run](#lifecyle-of-a-workflow-run)
-- [Task Executor (Tex)](#task-executor-tex)
-  - [Requirements](#requirements)
-  - [Running Tex](#running-tex)
-  - [Downloading Tex](#downloading-tex)
 
-# Cesium Scheduler
+# Cesium Ops
 
-This repository provides code examples and documentation for Cesium Scheduler, a new age recurring tasks scheduler architected for the cloud.
+This repository documentation for Cesium Ops, a new age recurring tasks and IT workflow orchestration engine architected for the cloud.
+Cesium Ops is a code workflow automation platform (as opposed to no-code or low-code workflow automation platform) that allows you to write scripts in your favorite technologies and remotely execute them inside your environment in response to various events.
 
-# What use cases does Cesium Scheduler solve?
-Cesium Scheduler is a tool that helps you run recurring workflows which are supposed to run at specific time intervals.
-Examples include running workflows for data extraction, data movement (using FTP or S3 etc), data processing, periodic restacking, security scans etc.
+# What use cases does Cesium Ops solve?
+Cesium Ops helps you solve 2 key problems: 
+* Running recurring workflows which are supposed to run at specific time intervals.
+* Running workflows for IT Service Request automation.
+
+Examples for recurring workflows include data extraction, data movement (using FTP or S3 etc), data processing, periodic restacking, security scans etc.
+
+Examples of IT request automation include scripts for handling things like resetting user LDAP credentials, user VPN access, granting ssh access to machines and reverting them after a set period etc. These scripts can be triggered programatically from the cloud through integrations with cloud based on service management tools like Jira.
 
 # Core Concepts
 
-This section explains some of the key things required to work with Cesium Scheduler.
+This section explains some of the key things required to work with Cesium Ops.
 
 ## Deployment Model
 
-Cesium Scheduler is designed to run purely as a SaaS service that is run and managed for you. This allows you to focus on using Cesium to solve key business problems while leaving the operational aspects of running the service and the database to us. The cloud component is sometimes refered to as `Cesium core`, `Cesium Cloud` or `core scheduler` in the documentation.
+Cesium Ops is designed to run in a hybrid model with the core orchestration service running as a SaaS service that is run and managed by us and a light weight daemon deployed on your infrastructure to run and track processes. This allows you to focus on using Cesium to solve key business problems while leaving the operational aspects of running the services and the database to us. The cloud component is refered to as `Cesium core`, `Cesium Cloud` or `core scheduler` in this documentation.
 
 
 ![High Level Deployment Model](images/cesium-high-level-deployment-model.jpeg)
@@ -57,23 +61,58 @@ The core entities in Cesium are:
 - [Task Executor](#task-executor): A piece of software that needs to be downloaded and run wherever the workflows need to be executed.
 - [Workflow](#workflow): An entity which contains a directed acyclic graph of tasks where each task presents a specific step that needs to be run as an independent process and some metadata around alerting and environment varialbes.
 
-# Core Entities
 
-## Workspace
+
+# Workspace
 
 The workspace is a way of organizing task executor and workflow into logical groups for easier management.
 If you have multiple teams within your company using Cesium , then you can try to create a workspace per team.
 Or if you are running workflows for different purposes, you can group them by purpose.
 
-## Task Executor
+# Task Executor
 
 The task executor (sometimes also refered to as `Tex` in the documentation) is a software that must be downloaded and run on your infrastructure. The task executor:
 
 - runs as a daemon process within the customer's infrastructure
-- is configured through a properties file to authenticate itself to the Cesium Scheduler cloud component.
+- is configured through a properties file to authenticate itself to the Cesium Ops cloud component.
 - is responsible for executing the worfkflow and communicating the state of execution
 
 Every task executor must be associated with a workspace. The task executor requires internet access to work correctly. The task executor initiates outbound network connections from the machine it is running on to the core scheduler in the cloud. Tex never accepts incoming requests from the internet and does not require you to open any ports in your network.
+
+## Requirements
+
+Following are the requirements for running Tex:
+* Tex is designed to run on JRE 1.8 (any JVM > 1.8 is good enough)
+* Tex does not need to be run as root.
+* The JVM will consume about 512 MB of RAM
+* The machine where tex runs requires outbound internet action to reach Cesium Ops's cloud servers.
+* Tex will not open any inbound ports on your machine and does not require changes to inbound rules on your firewall.
+* Tex requires bash to be available if there are bash tasks that need to be executed
+* Tex requires Python 3 and pip to be available if there are Python tasks to be executed.  
+
+
+## Running Tex
+Use the following steps to run tex:
+1. Download the tex zip using the link on the download tex page
+2. Optionally create a user for tex with non-super user status.
+3. Unzip the contents into the location where you want to run tex like `/opt/cesium/tex`.
+4. Once the contents are unzipped into a folder, we will refer to this folder as `TEX_HOME`.
+5. Go to the web console of Cesium Ops and navigate to the specific task executor you are trying to run. There will be a button there to download the config file for this tex. Press it and save the file locally.
+6. Under `TEX_HOME` there is a folder called config with a single config file under it called `tex-config.properties`. Update the config values from the values you get from the file you downloaded earlier.
+7. You must now have a filled up config file that will look like this:
+```
+texId: ahasadadaasea
+password: ek12this-is-a-secret-value
+tenantRefId: 9abcd31l-1234-5678-1234-286dd73aec45
+```
+8. Start script depends on the platform.
+   1. On mac and Linux: run the start script: `$TEX_HOME/bin/start-cesium-tex.sh` . This will start tex as a background process and will write out logs under the logs folder. You can safely exit the user and the shell where you started the tex instance.
+   2. On Windows: run the start script: `$TEX_HOME/bin/start-cesium-tex.vbs`
+
+## Downloading Tex
+
+You can download tex from [this page](download-tex.md).
+
 
 # Workflow
 
@@ -230,43 +269,3 @@ A workflow run goes through the following lifecycle:
 - Started: The workflow execution has been started by tex.
 - Failed: The workflow execution failed due to an error.
 - Succeeded: The workflow execution completed successfully.
-
-
-
-# Task Executor (Tex)
-The Task Executor is the component of Cesium Scheduler that is deployed inside the customers infrastructure and actually executes the worklfows and manages the processes and outcomes associated with the workflow tasks.
-You must download Tex (link below) and run it on your machine.
-
-## Requirements
-
-Following are the requirements for running Tex:
-* Tex is designed to run on JRE 1.8 (any JVM > 1.8 is good enough)
-* Tex does not need to be run as root.
-* The JVM will consume about 512 MB of RAM
-* The machine where tex runs requires outbound internet action to reach Cesium Scheduler's cloud servers.
-* Tex will not open any inbound ports on your machine and does not require changes to inbound rules on your firewall.
-* Tex requires bash to be available if there are bash tasks that need to be executed
-* Tex requires Python 3 and pip to be available if there are Python tasks to be executed.  
-
-
-## Running Tex
-Use the following steps to run tex:
-1. Download the tex zip using the link on the download tex page
-2. Optionally create a user for tex with non-super user status.
-3. Unzip the contents into the location where you want to run tex like `/opt/cesium/tex`.
-4. Once the contents are unzipped into a folder, we will refer to this folder as `TEX_HOME`.
-5. Go to the web console of Cesium Scheduler and navigate to the specific task executor you are trying to run. There will be a button there to download the config file for this tex. Press it and save the file locally.
-6. Under `TEX_HOME` there is a folder called config with a single config file under it called `tex-config.properties`. Update the config values from the values you get from the file you downloaded earlier.
-7. You must now have a filled up config file that will look like this:
-```
-texId: ahasadadaasea
-password: ek12this-is-a-secret-value
-tenantRefId: 9abcd31l-1234-5678-1234-286dd73aec45
-```
-8. Start script depends on the platform.
-   1. On mac and Linux: run the start script: `$TEX_HOME/bin/start-cesium-tex.sh` . This will start tex as a background process and will write out logs under the logs folder. You can safely exit the user and the shell where you started the tex instance.
-   2. On Windows: run the start script: `$TEX_HOME/bin/start-cesium-tex.vbs`
-
-## Downloading Tex
-
-You can download tex from [this page](download-tex.md).
