@@ -33,15 +33,8 @@ Once your app is configured and the 2 way handshake is complete, you can setup a
 ## Installation on Jira Cloud Instance
 
 This step must be performed by a Jira cloud admin user.
-Navigate to the "Apps" menu header in the top menu bar. In the menu that opens, navigate to "Manage your apps".
 
-On this page, click on the link "Upload app". 
-
-![Upload app](images/jira/jira-app-settings.png)
-
-If the upload app option is not available, you will have to click on "Settings" link shown above and in the modal that pops open, click on the checkbox that says "Enable Private Listings" and the next one that says "Enable Developer Mode" and hit save. After saving, you might have to refresh the page for the upload option to be visible.
-
-In the upload app dialog box, copy paste this URL: `https://app.cesiumscheduler.com/jira/atlassian-connect.json` into the text box and hit "Upload".
+Navigate to the [Cesium Automation page on the Jira Marketplace](https://marketplace.atlassian.com/apps/1229019/cesium-automation). Click on "Get it Now" to install the app on your site. Follow the latest Jira app installation instructions.
 
 Once the app is successfully installed, if you open the "Apps" menu on the top, you should see a new menu item that says "Cesium Automation".
 Click on this menu item to load the home page of the Jira-Cesium integration.
