@@ -6,6 +6,7 @@
 - [Workspace](#workspace)
 - [Task Executor](#task-executor)
   - [Requirements](#requirements)
+  - [Installation](#installation)
   - [Running Tex](#running-tex)
   - [Downloading Tex](#downloading-tex)
 - [Workflow](#workflow)
@@ -20,7 +21,8 @@
     - [Shell Task](#shell-task)
     - [PythonTask](#pythontask)
     - [Run Docker](#run-docker)
-- [Workflow Run](#workflow-run)
+- [Workflow Run History](#workflow-run-history)
+    - [Workflow Run Details](#workflow-run-details)
   - [Lifecyle of a workflow run](#lifecyle-of-a-workflow-run)
 
 # Cesium Ops
@@ -84,11 +86,19 @@ Every task executor must be associated with a workspace. The task executor requi
 Following are the requirements for running Tex:
 * Tex is designed to run on JRE 1.8 (any JVM > 1.8 is good enough)
 * Tex does not need to be run as root.
-* The JVM will consume about 512 MB of RAM
+* The JVM will consume about 512 MB of RAM but can take upto 1 GB of ram if a large number of long running workflows are being run.
 * The machine where tex runs requires outbound internet action to reach Cesium Ops's cloud servers.
 * Tex will not open any inbound ports on your machine and does not require changes to inbound rules on your firewall.
 * Tex requires bash to be available if there are bash tasks that need to be executed
-* Tex requires Python 3 and pip to be available if there are Python tasks to be executed.  
+* Tex requires Python 3 and pip to be available if there are Python tasks to be executed. If tex 
+
+## Installation
+
+The task executor can be run on Windows or any flavor of Linux.
+Here are the recommended best practices to run tex securely:
+* Create a separate user in your OS just for running tex
+* Unzip, setup and run task executor in a folder/path appropriate for your OS (for example `/opt/cesium/tex/` on linux)
+* Make sure the folder is only accessible to the user created specifically to run tex. This ensure no other users can modify the files, read any configs specific to tex or see any sensitive information in the logs.
 
 
 ## Running Tex
@@ -100,6 +110,7 @@ Use the following steps to run tex:
 5. Go to the web console of Cesium Ops and navigate to the specific task executor you are trying to run. There will be a button there to download the config file for this tex. Press it and save the file locally.
 6. Under `TEX_HOME` there is a folder called config with a single config file under it called `tex-config.properties`. Update the config values from the values you get from the file you downloaded earlier.
 7. You must now have a filled up config file that will look like this:
+
 ```
 texId: ahasadadaasea
 password: ek12this-is-a-secret-value
@@ -147,6 +158,9 @@ Workflows that use this trigger type are dependent on another workflow.
 When you select this option, the UI will show a dropdown containing the workflow that this workflow can be triggered by.
 
 ![Workflow triggered configuration](images/workflow-based-trigger.png)
+A workflow triggered by another workflow can be triggered in 2 modes:
+* Immediate: The 2nd workflow runs immediately when the first workflow is successful.
+* Delayed: The 2nd workflow runs with a delay of a configurable amount of time configured in seconds after the first workflow is successful.
 
 ### Manual Trigger
 A mannually run workflow can only be triggered in 2 ways:
@@ -176,7 +190,7 @@ Inputs are only allowed for [manually triggered workflows](#manual-trigger).
 * If the workflow is triggered through an API integration, the GraphQL API has parameters that the caller can set to pass variables dynamically.
   If the API call contains parameters that the workflow definition does not contain, the parameters not in the definition will not be passed to the task being run.
 
-They can be passed as values to your tasks by adding them as args using the format `${inputs.<input_name>}` where `<input_name>` is the name given to the input.
+They can be passed as values to your tasks by adding them as args using the format `${inputs[<input_name>]}` where `<input_name>` is the name given to the input.
 
 ![Passing an input variable to a task](images/workflow-inputs-reference-example.png)
 
@@ -248,7 +262,7 @@ Requirements:
 * Authentication to container registry: There is no explicit authentication and authorization configured to talk to the a private container registry if one is being used. Refer to [Docker login](https://docs.docker.com/engine/reference/commandline/login/) on how to provide login credentials. Most private container registries like AWS ECR, Google Container Registry/Artifact registry also provide instructions on how to use their respective IAM mechanims to allow your instance to pull images from the registry. Please refer to your vendor provided instructions for authenticating the docker daemon to your container registry.
 
 
-# Workflow Run
+# Workflow Run History
 
 A workflow refers to a single run of the workflow. A workflow run is created whenever it is time to execute it (based on the configured cron) or it is executed on demand.
 Each workflow run will have the following attributes:
@@ -261,6 +275,16 @@ Each workflow run will have the following attributes:
 
 You can view the workflow run of a specific workflow by choosing the `View History` action in the workflows list or by clicking on the `View History` button on the details of a specific workflow.
 
+### Workflow Run Details
+In workflow history, you can click on any row to see the details of a specific workflow run. 
+The workflow run should show you the following details:
+* Run Description
+* Inputs
+* Workflow Run Timeline: A timeline of individual tasks lifecycle
+* Details of the user or the process that started the workflow. If the workflow was started due to a dependency on another workflow, it will show the id or the name of the other workflow.
+
+![Workflow Run Details](images/workflow-run-details.png)
+
 ## Lifecyle of a workflow run
 
 A workflow run goes through the following lifecycle:
@@ -269,3 +293,4 @@ A workflow run goes through the following lifecycle:
 - Started: The workflow execution has been started by tex.
 - Failed: The workflow execution failed due to an error.
 - Succeeded: The workflow execution completed successfully.
+- Expired: If a workflow is not pickedup for execution with 4 hours for any reason (like tex being down), the worklfow is marked as `Expired` and is not pickedup for execution. 
