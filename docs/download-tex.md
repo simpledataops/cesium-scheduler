@@ -2,7 +2,7 @@
 
 The most recent version of the task executor can be downloaded here.
 
-[Download latest tex](https://storage.googleapis.com/prod_tex_releases/tex-0.3-bin.zip)
+[Download latest tex](https://storage.googleapis.com/prod_tex_releases/tex-0.8-bin.zip)
 
 
 
@@ -12,6 +12,7 @@ You can find the older versions of tex here.
 
 |      Date       |       Link     |      Notes        |
 | :-------------: | :------------: | :---------------: |
+|    30 Mar 2023  | [0.8](https://storage.googleapis.com/prod_tex_releases/tex-0.8-bin.zip) | Support for LDAP |
 |    8 Jan 2023  | [0.7](https://storage.googleapis.com/prod_tex_releases/tex-0.7-bin.zip) | Added backup poller for fetching updates from Cesium Cloud scheduler periodically. |
 |    1 Sep 2022  | [0.3](https://storage.googleapis.com/prod_tex_releases/tex-0.3-bin.zip) | Added support larger websocket messages. |
 |    2 Aug 2022  | [0.2](https://storage.googleapis.com/prod_tex_releases/tex-0.2-bin.zip) | Added support for new task types: Docker, Java, and Spark EMR (Spark on EMR is in Beta) |
